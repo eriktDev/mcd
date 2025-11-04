@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende el MCD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .theory {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .theory h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .theory p {
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .example-section {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .numbers {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .step {
+            background: #f0f4ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #764ba2;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .step.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .step-content {
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 20px 0;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .calculation {
+            font-family: 'Courier New', monospace;
+            background: #2d3748;
+            color: #48bb78;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Tutor de MCD</h1>
+        <p class="subtitle">Aprende a calcular el Máximo Común Divisor paso a paso</p>
+
+        <div class="theory">
+            <h2>¿Qué es el MCD?</h2>
+            <p>El <strong>Máximo Común Divisor (MCD)</strong> de dos o más números es el número más grande que divide exactamente a todos ellos.</p>
+            <p><strong>Método de Euclides:</strong> Dividimos repetidamente el número mayor entre el menor, y luego reemplazamos el mayor con el residuo hasta que el residuo sea 0. El último divisor es el MCD.</p>
+        </div>
+
+        <div class="example-section">
+            <div class="numbers" id="numbers">Haz clic en "Nuevo Ejemplo" para comenzar</div>
+            <div id="steps"></div>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="button-container">
+            <button onclick="generateExample()">🎲 Nuevo Ejemplo</button>
+            <button onclick="showNextStep()" id="nextBtn" disabled>▶️ Siguiente Paso</button>
+            <button onclick="showAllSteps()" id="allBtn" disabled>⏭️ Ver Todo</button>
+        </div>
+    </div>
+
+    <script>
+        let currentNum1, currentNum2;
+        let steps = [];
+        let currentStepIndex = 0;
+
+        function gcd(a, b) {
+            steps = [];
+            let original_a = a;
+            let original_b = b;
+            
+            steps.push({
+                title: "Paso inicial",
+                content: `Queremos encontrar el MCD de ${original_a} y ${original_b}`
+            });
+
+            let stepNum = 1;
+            while (b !== 0) {
+                let quotient = Math.floor(a / b);
+                let remainder = a % b;
+                
+                steps.push({
+                    title: `Paso ${stepNum}`,
+                    content: `Dividimos ${a} ÷ ${b}`,
+                    calculation: `${a} = ${b} × ${quotient} + ${remainder}`
+                });
+
+                if (remainder !== 0) {
+                    steps.push({
+                        title: `Continuamos`,
+                        content: `El residuo es ${remainder}, entonces ahora dividimos ${b} ÷ ${remainder}`
+                    });
+                }
+
+                a = b;
+                b = remainder;
+                stepNum++;
+            }
+
+            steps.push({
+                title: "¡Resultado!",
+                content: `El residuo es 0, por lo tanto el MCD es ${a}`,
+                isResult: true
+            });
+
+            return a;
+        }
+
+        function generateExample() {
+            currentNum1 = Math.floor(Math.random() * 80) + 20;
+            currentNum2 = Math.floor(Math.random() * 80) + 20;
+            
+            if (currentNum1 < currentNum2) {
+                [currentNum1, currentNum2] = [currentNum2, currentNum1];
+            }
+
+            document.getElementById('numbers').textContent = `MCD(${currentNum1}, ${currentNum2})`;
+            document.getElementById('numbers').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('numbers').classList.remove('pulse');
+            }, 500);
+
+            document.getElementById('steps').innerHTML = '';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').classList.remove('show');
+
+            gcd(currentNum1, currentNum2);
+            currentStepIndex = 0;
+
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('allBtn').disabled = false;
+        }
+
+        function showNextStep() {
+            if (currentStepIndex < steps.length) {
+                const stepsContainer = document.getElementById('steps');
+                const step = steps[currentStepIndex];
+
+                if (step.isResult) {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = `🎉 MCD(${currentNum1}, ${currentNum2}) = ${gcd(currentNum1, currentNum2)}`;
+                    setTimeout(() => resultDiv.classList.add('show'), 100);
+                    document.getElementById('nextBtn').disabled = true;
+                    document.getElementById('allBtn').disabled = true;
+                } else {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step';
+                    
+                    let content = `<div class="step-title">${step.title}</div>
+                                  <div class="step-content">${step.content}</div>`;
+                    
+                    if (step.calculation) {
+                        content += `<div class="calculation">${step.calculation}</div>`;
+                    }
+                    
+                    stepDiv.innerHTML = content;
+                    stepsContainer.appendChild(stepDiv);
+                    
+                    setTimeout(() => stepDiv.classList.add('show'), 100);
+                }
+
+                currentStepIndex++;
+            }
+        }
+
+        function showAllSteps() {
+            while (currentStepIndex < steps.length) {
+                showNextStep();
+            }
+        }
+    </script>
+</body>
+</html>
